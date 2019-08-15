@@ -42,7 +42,9 @@ class Sinusoid:
     def __sub__(self, other):
         if self.frequency != other.frequency:
             raise ValueError('Only Sinusoids with the same frequency can be subtracted')
-        return self.__class__(self.frequency, abs(self.amplitude - other.amplitude))
+        if self.amplitude > other.amplitude:
+            return self.__class__(self.frequency, self.amplitude - other.amplitude)
+        return None
 
     def __lt__(self, other):
         return self.frequency < other.frequency
@@ -51,7 +53,7 @@ class Sinusoid:
         return self.frequency > other.frequency
 
     def __eq__(self, other):
-        return self.frequency == other.frequency
+        return self.frequency == other.frequency and self.amplitude == other.amplitude
 
     def __ne__(self, other):
         return not self == other
@@ -61,3 +63,6 @@ class Sinusoid:
 
     def __ge__(self, other):
         return self > other or self == other
+
+    def __hash__(self):
+        return hash((self.frequency, self.amplitude))

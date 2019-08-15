@@ -1,3 +1,4 @@
+from bisect import bisect_left, insort_left
 from itertools import combinations
 from math import e
 from vassilakis_sra.sinusoid import Sinusoid
@@ -6,11 +7,43 @@ from vassilakis_sra.sinusoid import Sinusoid
 class SRAModel:
 
     def __init__(self, sinusoids):
-        self.roughness_pairs = self.generate_roughness(sinusoids)
+        self._sinusoids = self.create_sinusoid_list(sinusoids)
+        self._roughness_pairs = self.generate_roughness()
+
+    @property
+    def sinusoids(self):
+        return self._sinusoids
+    
+    @property
+    def roughness_pairs(self):
+        return self._roughness_pairs
 
     @property
     def roughness(self):
         return sum(v for v in self.roughness_pairs.values())
+
+    @staticmethod
+    def generate_sinusoid_object(sinusoid):
+        if isinstance(sinusoid, Sinusoid):
+            return sinusoid
+        frequency, amplitude = sinusoid
+        return Sinusoid(frequency, amplitude)
+
+    def generate_sinusoid_objects(self, sinusoids):
+        for sinusoid in sinusoids:
+            yield self.generate_sinusoid_object(sinusoid)
+
+    def create_sinusoid_list(self, sinusoids):
+        sinusoid_list = list()
+        for sinusoid in self.generate_sinusoid_objects(sinusoids):
+            index = bisect_left(sinusoid_list, sinusoid)
+            if index == len(sinusoid_list):
+                sinusoid_list.insert(index, sinusoid)
+            try:
+                sinusoid_list[index] = sinusoid_list[index] + sinusoid
+            except ValueError:
+                sinusoid_list.insert(index, sinusoid)
+        return sinusoid_list
 
     @staticmethod
     def generate_roughness_value_from_pair(sinusoid_1, sinusoid_2):
@@ -29,19 +62,70 @@ class SRAModel:
             pow(e, -1 * b2 * s * (frequency_max - frequency_min))
         return pow(X, 0.1) * 0.5 * pow(Y, 3.11) * Z
 
-    @staticmethod
-    def generate_sinusoid_objects(sinusoids):
-        for sinusoid in sinusoids:
-            if isinstance(sinusoid, Sinusoid):
-                yield sinusoid
-            else:
-                frequency, amplitude = sinusoid
-                yield Sinusoid(frequency, amplitude)
-
-    def generate_roughness(self, sinusoids):
+    def generate_roughness(self):
         roughness_pairs = dict()
-        for pair in combinations(self.generate_sinusoid_objects(sinusoids), 2):
+        for pair in combinations(self.sinusoids, 2):
             sinusoid_1, sinusoid_2 = pair
             roughness_value = self.generate_roughness_value_from_pair(sinusoid_1, sinusoid_2)
             roughness_pairs.update({(sinusoid_1, sinusoid_2): roughness_value})
         return roughness_pairs
+
+    def remove_sinusoid(self, sinusoid):
+        sinusoid = self.generate_sinusoid_object(sinusoid)
+        for k in self.roughness_pairs:
+            sinusoid_1, sinusoid_2 = k
+            if sinusoid_1 == sinusoid:
+                existing_sinusoid, paired_sinusoid = sinusoid_1, sinusoid_2
+            elif sinusoid_2 == sinusoid:
+                existing_sinusoid, paired_sinusoid = sinusoid_2, sinusoid_1
+            else:
+                continue
+            del self.sinusoids[bisect_left(self.sinusoids, existing_sinusoid)]
+            del self.roughness_pairs[k]
+            new_sinusoid = existing_sinusoid - sinusoid
+            if new_sinusoid:
+                roughness_value = self.generate_roughness_value_from_pair(new_sinusoid, paired_sinusoid)
+                self.roughness_pairs.update({(new_sinusoid, paired_sinusoid): roughness_value})
+                insort_left(self.sinusoids, new_sinusoid)
+
+    def remove_sinusoids(self, sinusoids):
+        for sinusoid in sinusoids:
+            self.remove_sinusoid(sinusoid)
+
+    def remove_sinusoid_by_frequency(self, frequency):
+        found_sinusoid = None
+        for k in self.roughness_pairs:
+            sinusoid_1, sinusoid_2 = k
+            if sinusoid_1.frequency == float(frequency) or sinusoid_2.frequency == float(frequency):
+                del self.roughness_pairs[k]
+                if found_sinusoid is None:
+                    found_sinusoid = sinusoid_1 if sinusoid_1.frequency == float(frequency) else sinusoid_2
+        if found_sinusoid is not None:
+            del self.sinusoids[bisect_left(self.sinusoids, found_sinusoid)]
+
+    def add_sinusoid(self, sinusoid):
+        sinusoid = self.generate_sinusoid_object(sinusoid)
+
+    def __str__(self):
+        return 'SRA model with {} sinusoids and roughness value of {:.2f}'.format(len(self.sinusoids), self.roughness)
+    
+    def __repr__(self):
+        return 'SRAModel([{}])').format(', '.join(repr(sinusoid) for sinusoid in self.sinusoids)
+
+    def __lt__(self, other):
+        return self.roughness < other.roughness
+
+    def __gt__(self, other):
+        return self.roughness > other.roughness
+
+    def __eq__(self, other):
+        return self.sinusoids == other.sinusoids
+
+    def __ne__(self, other):
+        return not self == other
+
+    def __le__(self, other):
+        return self < other or self == other
+
+    def __ge__(self, other):
+        return self > other or self == other
