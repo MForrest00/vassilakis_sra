@@ -76,21 +76,20 @@ class SRAModel:
         index = bisect_left(self.sinusoids, sinusoid)
         if index < len(self.sinusoids) and sinusoid.frequency == self.sinusoids[index].frequency:
             new_sinusoid = None
-            for k in self.roughness_pairs:
+            for k in list(self.roughness_pairs.keys()):
                 sinusoid_1, sinusoid_2 = k
-                if sinusoid_1 == sinusoid:
+                if sinusoid_1.frequency == sinusoid.frequency:
                     existing_sinusoid, paired_sinusoid = sinusoid_1, sinusoid_2
-                elif sinusoid_2 == sinusoid:
+                elif sinusoid_2.frequency == sinusoid.frequency:
                     existing_sinusoid, paired_sinusoid = sinusoid_2, sinusoid_1
                 else:
                     continue
                 del self.roughness_pairs[k]
-                if new_sinusoid is not None:
-                    new_sinusoid = existing_sinusoid - sinusoid
+                new_sinusoid = existing_sinusoid - sinusoid
                 if new_sinusoid:
                     roughness_value = self.generate_roughness_value_from_pair(new_sinusoid, paired_sinusoid)
                     self.roughness_pairs.update({(new_sinusoid, paired_sinusoid): roughness_value})
-            del self.sinusoids[bisect_left(self.sinusoids, existing_sinusoid)]
+            del self.sinusoids[index]
             if new_sinusoid:
                 insort_left(self.sinusoids, new_sinusoid)
 
@@ -107,6 +106,7 @@ class SRAModel:
         sinusoid = self.generate_sinusoid_object(sinusoid)
         index = bisect_left(self.sinusoids, sinusoid)
         if index < len(self.sinusoids) and sinusoid.frequency == self.sinusoids[index].frequency:
+            sinusoid += self.sinusoids[index]
             self.remove_sinusoid(self.sinusoids[index])
         for existing_sinusoid in self.sinusoids:
             roughness_value = self.generate_roughness_value_from_pair(sinusoid, existing_sinusoid)

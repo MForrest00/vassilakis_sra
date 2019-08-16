@@ -23,7 +23,7 @@ This package contains two entities which represent the components of the Vassila
 ### Examples
 
 To create a `Sinusoid` instance:
-```
+```python
 from vassilakis_sra import Sinusoid
 
 s1 = Sinusoid(440.0, 1.0)
@@ -31,7 +31,7 @@ s2 = Sinusoid(frequency=466.1638, amplitude=2.0)
 ```
 
 To generate a roughness value from `Sinusoid` instances:
-```
+```python
 from vassilakis_sra import Sinusoid, SRAModel
 
 s1 = Sinusoid(440.0, 1.0)
@@ -43,7 +43,7 @@ print(sra.roughness)
 ```
 
 To generate a roughness value without creating `Sinusoid` instances:
-```
+```python
 from vassilakis_sra import SRAModel
 
 sra = SRAModel([(440.0, 1.0), (466.1638, 2.0)])
