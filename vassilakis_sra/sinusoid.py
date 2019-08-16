@@ -4,7 +4,7 @@ class Sinusoid:
         self.frequency = frequency
         self.amplitude = amplitude
     
-    def _check_valid_number_argument(self, argument):
+    def __check_valid_number_argument(self, argument):
         if not isinstance(argument, int) and not isinstance(argument, float):
             raise TypeError('Frequency and amplitude values must be an integers or floats')
         if argument <= 0:
@@ -16,7 +16,7 @@ class Sinusoid:
 
     @frequency.setter
     def frequency(self, frequency):
-        self._check_valid_number_argument(frequency)
+        self.__check_valid_number_argument(frequency)
         self._frequency = float(frequency)
 
     @property
@@ -25,7 +25,7 @@ class Sinusoid:
 
     @amplitude.setter
     def amplitude(self, amplitude):
-        self._check_valid_number_argument(amplitude)
+        self.__check_valid_number_argument(amplitude)
         self._amplitude = float(amplitude)
 
     def __str__(self):
