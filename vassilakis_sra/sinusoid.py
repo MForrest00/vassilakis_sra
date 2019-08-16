@@ -18,7 +18,7 @@ class Sinusoid:
     def __init__(self, frequency, amplitude):
         self.frequency = frequency
         self.amplitude = amplitude
-    
+
     def __check_valid_number_argument(self, argument):
         """Checks if the argument is an int or a float and is greater than 0.
 
@@ -97,6 +97,9 @@ class Sinusoid:
 
     def __ge__(self, other):
         return self > other or self == other
+
+    def __bool__(self):
+        return True
 
     def __hash__(self):
         return hash((self.frequency, self.amplitude))

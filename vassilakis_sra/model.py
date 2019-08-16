@@ -170,8 +170,10 @@ class SRAModel:
             self.add_sinusoid(sinusoid)
 
     def __str__(self):
-        return 'SRA model with {} sinusoids and roughness value of {:.2f}'.format(len(self.sinusoids), self.roughness)
-    
+        sinusoid_count = len(self.sinusoids)
+        return 'SRA model with {} sinusoids and roughness value of {:.2f}'.format(sinusoid_count,
+                                                                                  self.roughness)
+
     def __repr__(self):
         return 'SRAModel([{}])'.format(', '.join(repr(sinusoid) for sinusoid in self.sinusoids))
 
@@ -192,3 +194,11 @@ class SRAModel:
 
     def __ge__(self, other):
         return self > other or self == other
+
+    def __bool__(self):
+        if len(self.sinusoids) > 0:
+            return True
+        return False
+
+    def __copy__(self):
+        return self.__class__(self.sinusoids.copy())
