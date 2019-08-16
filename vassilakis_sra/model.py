@@ -100,7 +100,7 @@ class SRAModel:
 
     def remove_sinusoid_by_frequency(self, frequency):
         index = bisect_left(self.sinusoids, Sinusoid(frequency, 1.0))
-        if index < len(self.sinusoids) and sinusoid.frequency == self.sinusoids[index].frequency:
+        if index < len(self.sinusoids) and frequency == self.sinusoids[index].frequency:
             self.remove_sinusoid(self.sinusoids[index])
 
     def add_sinusoid(self, sinusoid):
