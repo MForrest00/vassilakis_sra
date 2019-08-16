@@ -7,7 +7,7 @@ The model was developed by Pantelis Vassilakis. You can find more information he
 
 ### Installation
 
-`pip install vassilakis_sra`
+`pip install https://github.com/MForrest00/vassilakis_sra/zipball/master`
 
 ### Contents
 
