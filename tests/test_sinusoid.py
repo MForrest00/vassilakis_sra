@@ -29,6 +29,8 @@ class TestSinusoid(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.s1 + self.s3
             self.s1 - self.s3
+            self.s1 * -3
+            self.s1 / -3
         self.assertEqual(self.s1 + self.s1, self.s2)
         self.assertEqual(self.s2 - self.s1, self.s1)
         self.assertIs(self.s1 - self.s1, None)
