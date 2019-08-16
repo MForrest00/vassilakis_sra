@@ -46,6 +46,16 @@ class Sinusoid:
             return self.__class__(self.frequency, self.amplitude - other.amplitude)
         return None
 
+    def __mul__(self, other):
+        if not isinstance(other, int) and not isinstance(other, float):
+            raise ValueError('Sinusoids can only be multiplied by an integer or a float')
+        return self.__class__(self.frequency, self.amplitude * other)
+
+    def __truediv__(self, other):
+        if not isinstance(other, int) and not isinstance(other, float):
+            raise ValueError('Sinusoids can only be divided by an integer or a float')
+        return self.__class__(self.frequency, self.amplitude / other)
+
     def __lt__(self, other):
         return self.frequency < other.frequency
 
