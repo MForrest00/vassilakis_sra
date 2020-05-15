@@ -1,2 +1,2 @@
-from vassilakis_sra.model import SRAModel
+from vassilakis_sra.vassilakis_sra_model import VassilakisSRAModel
 from vassilakis_sra.sinusoid import Sinusoid

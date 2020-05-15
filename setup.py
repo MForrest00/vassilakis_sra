@@ -10,6 +10,6 @@ setup(
     author_email='mforrest00@gmail.com',
     url='https://github.com/MForrest00/vassilakis_sra',
     download_url='https://github.com/MForrest00/vassilakis_sra/tarball/0.1',
-    keysword=['sound', 'roughness', 'spectral', 'analysis'],
+    keywords=['sound', 'roughness', 'spectral', 'analysis'],
     classifiers=[],
 )
