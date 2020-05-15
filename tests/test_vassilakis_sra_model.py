@@ -2,7 +2,7 @@ import unittest
 from vassilakis_sra import Sinusoid, VassilakisSRAModel
 
 
-class TestSRAModel(unittest.TestCase):
+class TestVassilakisSRAModel(unittest.TestCase):
 
     def setUp(self):
         self.sra1 = VassilakisSRAModel([(440.0, 1.0)])
